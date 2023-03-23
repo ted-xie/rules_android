@@ -26,13 +26,19 @@ import android.widget.TextView;
  */
 public class BasicActivity extends Activity {
 
+  static {
+    System.loadLibrary("basic_app");
+  }
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.basic_activity);
 
     final Button buttons[] = {
-      findViewById(R.id.button_id_fizz), findViewById(R.id.button_id_buzz),
+      findViewById(R.id.button_id_fizz),
+      findViewById(R.id.button_id_buzz),
+      findViewById(R.id.button_id_native),
     };
 
     for (Button b : buttons) {
@@ -44,6 +50,8 @@ public class BasicActivity extends Activity {
                 tv.setText("fizz");
               } else if (v.getId() == R.id.button_id_buzz) {
                 tv.setText("buzz");
+              } else if (v.getId() == R.id.button_id_native) {
+                tv.setText(BasicActivityJNI.getIntFromJNI(42));
               }
             }
           });

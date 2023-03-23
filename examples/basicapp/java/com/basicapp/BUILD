@@ -8,7 +8,15 @@ android_binary(
 
 android_library(
     name = "basic_lib",
-    srcs = ["BasicActivity.java"],
+    srcs = ["BasicActivity.java", "BasicActivityJNI.java"],
     manifest = "AndroidManifest.xml",
     resource_files = glob(["res/**"]),
+    deps = [":native_lib_static"],
+)
+
+cc_library(
+    name = "native_lib_static",
+    srcs = ["native.cc"],
+    hdrs = ["native.h"],
+    #alwayslink = True,
 )
