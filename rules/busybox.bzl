@@ -15,6 +15,7 @@
 """Bazel ResourcesBusyBox Commands."""
 
 load(":java.bzl", _java = "java")
+load("//rules/flags:flags.bzl", _flags = "flags")
 
 _ANDROID_RESOURCES_STRICT_DEPS = "android_resources_strict_deps"
 
@@ -403,7 +404,7 @@ def _package(
     transitive_input_files.append(resource_apks)
     _disable_warnings(args)
 
-    _java.run(
+    _java_run(
         ctx = ctx,
         host_javabase = host_javabase,
         executable = busybox,
@@ -450,7 +451,7 @@ def _parse(
 
     _disable_warnings(args)
 
-    _java.run(
+    _java_run(
         ctx = ctx,
         host_javabase = host_javabase,
         executable = busybox,
@@ -535,7 +536,7 @@ def _merge_assets(
 
     _disable_warnings(args)
 
-    _java.run(
+    _java_run(
         ctx = ctx,
         host_javabase = host_javabase,
         executable = busybox,
@@ -626,7 +627,7 @@ def _validate_and_link(
 
     _disable_warnings(args)
 
-    _java.run(
+    _java_run(
         ctx = ctx,
         host_javabase = host_javabase,
         executable = busybox,
@@ -685,7 +686,7 @@ def _compile(
 
     _disable_warnings(args)
 
-    _java.run(
+    _java_run(
         ctx = ctx,
         host_javabase = host_javabase,
         executable = busybox,
@@ -791,7 +792,7 @@ def _merge_compiled(
 
     _disable_warnings(args)
 
-    _java.run(
+    _java_run(
         ctx = ctx,
         host_javabase = host_javabase,
         executable = busybox,
@@ -805,6 +806,12 @@ def _merge_compiled(
         supports_workers = True,
         supports_multiplex_workers = True,
     )
+
+def _java_run(ctx, *args, **kwargs):
+    enable_workers = _flags.get(ctx).persistent_android_resource_processor
+    kwargs["supports_workers"] = enable_workers
+    kwargs["supports_multiplex_workers"] = enable_workers
+    _java.run(*args, **kwargs)
 
 def _escape_mv(s):
     """Escapes `:` and `,` in manifest values so they can be used as a busybox flag."""
@@ -889,7 +896,7 @@ def _merge_manifests(
 
     _disable_warnings(args)
 
-    _java.run(
+    _java_run(
         ctx = ctx,
         host_javabase = host_javabase,
         executable = busybox,
@@ -946,7 +953,7 @@ def _process_databinding(
 
     _disable_warnings(args)
 
-    _java.run(
+    _java_run(
         ctx = ctx,
         host_javabase = host_javabase,
         executable = busybox,
@@ -1019,7 +1026,7 @@ def _generate_binary_r(
 
     _disable_warnings(args)
 
-    _java.run(
+    _java_run(
         ctx = ctx,
         host_javabase = host_javabase,
         executable = busybox,
@@ -1088,7 +1095,7 @@ def _make_aar(
 
     _disable_warnings(args)
 
-    _java.run(
+    _java_run(
         ctx = ctx,
         host_javabase = host_javabase,
         executable = busybox,
