@@ -119,7 +119,7 @@ def _make_resources_flag(
         ],
     )
 
-def _disable_warnings(args):
+def _disable_warnings(ctx, args):
     if _flags.get(ctx).persistent_android_resource_processor:
         # Disable warnings - this are output to stdin/stderr which breaks worker mode
         args.add("--logWarnings=false")
@@ -403,7 +403,7 @@ def _package(
         join_with = ":",
     )
     transitive_input_files.append(resource_apks)
-    _disable_warnings(args)
+    _disable_warnings(ctx, args)
 
     _java_run(
         ctx = ctx,
@@ -450,7 +450,7 @@ def _parse(
     )
     args.add("--output", out_symbols)
 
-    _disable_warnings(args)
+    _disable_warnings(ctx, args)
 
     _java_run(
         ctx = ctx,
@@ -535,7 +535,7 @@ def _merge_assets(
         join_with = "&",
     )
 
-    _disable_warnings(args)
+    _disable_warnings(ctx, args)
 
     _java_run(
         ctx = ctx,
@@ -626,7 +626,7 @@ def _validate_and_link(
     )
     input_files.extend(resource_apks)
 
-    _disable_warnings(args)
+    _disable_warnings(ctx, args)
 
     _java_run(
         ctx = ctx,
@@ -685,7 +685,7 @@ def _compile(
     )
     args.add("--output", out_file)
 
-    _disable_warnings(args)
+    _disable_warnings(ctx, args)
 
     _java_run(
         ctx = ctx,
@@ -791,7 +791,7 @@ def _merge_compiled(
         )
         transitive_input_files.append(transitive_compiled_resources)
 
-    _disable_warnings(args)
+    _disable_warnings(ctx, args)
 
     _java_run(
         ctx = ctx,
@@ -812,7 +812,7 @@ def _java_run(ctx, *args, **kwargs):
     enable_workers = _flags.get(ctx).persistent_android_resource_processor
     kwargs["supports_workers"] = enable_workers
     kwargs["supports_multiplex_workers"] = enable_workers
-    _java.run(*args, **kwargs)
+    _java.run(ctx, *args, **kwargs)
 
 def _escape_mv(s):
     """Escapes `:` and `,` in manifest values so they can be used as a busybox flag."""
@@ -895,7 +895,7 @@ def _merge_manifests(
         args.add("--log", out_log_file)
         outputs.append(out_log_file)
 
-    _disable_warnings(args)
+    _disable_warnings(ctx, args)
 
     _java_run(
         ctx = ctx,
@@ -952,7 +952,7 @@ def _process_databinding(
     args.add("--dataBindingInfoOut", out_databinding_info)
     args.add("--appId", java_package)
 
-    _disable_warnings(args)
+    _disable_warnings(ctx, args)
 
     _java_run(
         ctx = ctx,
@@ -1025,7 +1025,7 @@ def _generate_binary_r(
     args.add("--classJarOutput", out_class_jar)
     args.add("--targetLabel", str(ctx.label))
 
-    _disable_warnings(args)
+    _disable_warnings(ctx, args)
 
     _java_run(
         ctx = ctx,
@@ -1094,7 +1094,7 @@ def _make_aar(
     if should_throw_on_conflict:
         args.add("--throwOnResourceConflict")
 
-    _disable_warnings(args)
+    _disable_warnings(ctx, args)
 
     _java_run(
         ctx = ctx,
