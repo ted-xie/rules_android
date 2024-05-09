@@ -32,9 +32,9 @@ def rules_android_prereqs(dev_mode = False):
     maybe(
         http_archive,
         name = "rules_jvm_external",
-        strip_prefix = "rules_jvm_external-fa73b1a8e4846cee88240d0019b8f80d39feb1c3",
-        sha256 = "7e13e48b50f9505e8a99cc5a16c557cbe826e9b68d733050cd1e318d69f94bb5",
-        url = "https://github.com/bazelbuild/rules_jvm_external/archive/fa73b1a8e4846cee88240d0019b8f80d39feb1c3.zip",
+        strip_prefix = "rules_jvm_external-4.5",
+        sha256 = "b17d7388feb9bfa7f2fa09031b32707df529f26c91ab9e5d909eb1676badd9a6",
+        url = "https://github.com/bazelbuild/rules_jvm_external/archive/refs/tags/4.5.zip"
     )
 
     maybe(

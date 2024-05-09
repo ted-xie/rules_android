@@ -32,6 +32,8 @@ def rules_android_workspace():
 
     maven_install(
         name = "rules_android_maven",
+        aar_import_bzl_label = "@rules_android//android:rules.bzl",
+        use_starlark_android_rules = True,
         artifacts = [
             "androidx.privacysandbox.tools:tools:1.0.0-alpha06",
             "androidx.privacysandbox.tools:tools-apigenerator:1.0.0-alpha06",

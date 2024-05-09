@@ -63,6 +63,8 @@ maven.install(
     # To generate the maven lockfile, run this command:
     # bazel run --noenable_bzlmod @rules_android_maven//:pin
     lock_file = "//:rules_android_maven_install.json",
+    aar_import_bzl_label = "@rules_android//android:rules.bzl",
+    use_starlark_android_rules = True,
     repositories = [
         "https://maven.google.com",
         "https://repo1.maven.org/maven2",
