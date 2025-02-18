@@ -1,6 +1,7 @@
 # Actions for Android rules.
 
 load("@rules_java//java:defs.bzl", "java_binary", "java_import", "java_library")
+load("//src/tools/java/com/google/devtools/build/android/r8:constants.bzl", "DESUGAR_JVM_FLAGS")
 load("//tools/android:defs.bzl", "run_singlejar")
 
 package(default_visibility = ["//visibility:public"])
@@ -127,6 +128,8 @@ java_library(
         "//src/tools/java/com/google/devtools/build/android/junctions",
         "//src/tools/java/com/google/devtools/build/android/proto:resources_java_proto",
         "//src/tools/java/com/google/devtools/build/android/proto:serialize_format_java_pb",
+        "//src/tools/java/com/google/devtools/build/android/r8",
+        "//src/tools/java/com/google/devtools/build/android/r8:constants",
         "//src/tools/java/com/google/devtools/build/android/resources",
         "//src/tools/java/com/google/devtools/build/android/ziputils:ziputils_lib",
         "//tools/android:autovalue",
@@ -139,6 +142,14 @@ java_library(
         "@rules_android_maven//:com_google_protobuf_protobuf_java",
         "@rules_android_maven//:org_gradle_gradle_core",
     ],
+)
+
+java_binary(
+    name = "DesugarDexShardingAction",
+    jvm_flags = DESUGAR_JVM_FLAGS,
+    main_class = "com.google.devtools.build.android.DesugarDexShardingAction",
+    visibility = ["//visibility:public"],
+    runtime_deps = [":android_builder_lib"],
 )
 
 java_library(

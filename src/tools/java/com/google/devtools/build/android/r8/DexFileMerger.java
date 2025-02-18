@@ -39,6 +39,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -398,7 +399,8 @@ public class DexFileMerger {
       run(args);
     } catch (CompilationFailedException | IOException e) {
       System.err.println("Merge failed: " + e.getMessage());
-      throw new RuntimeException("Merge failed: " + e.getMessage(), e);
+      throw new RuntimeException(
+          "Merge failed with args '" + Arrays.toString(args) + "': " + e.getMessage(), e);
     }
   }
 

@@ -49,7 +49,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Logger;
 
 /** Desugar compatible wrapper based on D8 desugaring engine */
@@ -275,6 +277,12 @@ public class Desugar {
             "Specify desugared library configuration. "
                 + "The input file is a desugared library configuration (json)")
     public List<Path> desugaredLibConfig = ImmutableList.of();
+
+    @Parameter(
+        names = "--no_system_exit",
+        description = "Disable System.exit() at end of this program.",
+        arity = 1)
+    public boolean noExit;
   }
 
   private final DesugarOptions options;
@@ -582,7 +590,7 @@ public class Desugar {
         options.outputJars.size());
   }
 
-  private static int processRequest(List<String> args, PrintStream diagnosticsHandlerPrintStream)
+  public static int processRequest(List<String> args, PrintStream diagnosticsHandlerPrintStream)
       throws Exception {
     DesugarOptions options = parseCommandLineOptions(args.toArray(new String[0]));
     validateOptions(options);
@@ -625,10 +633,19 @@ public class Desugar {
   }
 
   public static void main(String[] args) throws Exception {
-    if (args.length > 0 && args[0].equals("--persistent_worker")) {
-      System.exit(runPersistentWorker());
+    // Create a set of args
+    Set<String> argsSet = new HashSet<>(Arrays.asList(args));
+    boolean isPersistentWorker = argsSet.contains("--persistent_worker");
+    boolean noExit = argsSet.contains("--no_system_exit");
+    int exitCode;
+    if (isPersistentWorker) {
+      exitCode = runPersistentWorker();
     } else {
-      System.exit(processRequest(Arrays.asList(args), System.err));
+      exitCode = processRequest(Arrays.asList(args), System.err);
+    }
+
+    if (!noExit) {
+      System.exit(exitCode);
     }
   }
 }

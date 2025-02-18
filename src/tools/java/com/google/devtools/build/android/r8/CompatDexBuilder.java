@@ -208,6 +208,16 @@ public class CompatDexBuilder {
     }
   }
 
+  public void dexEntries(String[] args)
+      throws IOException, InterruptedException, ExecutionException, ParameterException {
+    try {
+      dexEntries(/* dexCache= */ null, Arrays.asList(args), new DexDiagnosticsHandler(System.err));
+    } catch (Exception e) {
+      throw new ExecutionException(
+          "CompatDexBuilder raised exception with args: '" + Arrays.toString(args) + "'", e);
+    }
+  }
+
   @SuppressWarnings("JdkObsolete")
   private void dexEntries(
       @Nullable Cache<DexingKeyR8, byte[]> dexCache,
