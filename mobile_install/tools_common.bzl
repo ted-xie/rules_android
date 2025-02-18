@@ -66,6 +66,12 @@ TOOL_ATTRS = dict(
         cfg = "exec",
         executable = True,
     ),
+    _desugar_dex_sharding = attr.label(
+        default = Label("//src/tools/java/com/google/devtools/build/android:DesugarDexShardingAction_deploy.jar"),
+        allow_files = True,
+        cfg = "exec",
+        executable = True,
+    ),
     _desugar_java8 = attr.label(
         default = Label("//tools/android:desugar_java8"),
         allow_files = True,

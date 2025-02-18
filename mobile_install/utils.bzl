@@ -162,7 +162,7 @@ def dex(ctx, jar, out_dex_shards, deps = None, desugar = True):
     args = ctx.actions.args()
     args.use_param_file(param_file_arg = "-flagfile=%s", use_always = True)
     if desugar:
-        args.add("-desugar", ctx.executable._desugar_java8)
+        args.add("-desugar_enabled", "True")
         args.add("-android_jar", first(ctx.files._android_sdk))
         if deps:
             args.add_joined("-classpath", deps, join_with = ",")
@@ -171,17 +171,27 @@ def dex(ctx, jar, out_dex_shards, deps = None, desugar = True):
     # Unconditionally add -desugared_lib_config. This matches the behavior of tools/android/d8_desugar.sh.
     args.add("-desugared_lib_config", ctx.file._desugared_lib_config)
 
-    args.add("-dexbuilder", ctx.executable._dexbuilder)
     args.add("-min_sdk_version", min_sdk)
     args.add("-in", jar)
     args.add_joined("-out", out_dex_shards, join_with = ",")
 
+    java_runtime = ctx.attr._mi_host_javabase[java_common.JavaRuntimeInfo]
+    java = java_runtime.java_executable_exec_path
+
+    jvm_flags = [
+        # b/71513487
+        "-XX:+TieredCompilation",
+        "-XX:TieredStopAtLevel=1",
+        "-Xms8g",
+        "-Xmx8g",
+    ]
+
     ctx.actions.run(
-        executable = ctx.executable._android_kit,
-        arguments = ["dex", args],
-        tools = [ctx.executable._desugar_java8, ctx.executable._dexbuilder],
+        executable = java,
+        tools = [ctx.executable._desugar_dex_sharding],
+        arguments = jvm_flags + ["-jar", ctx.executable._desugar_dex_sharding.path, args],
         inputs = depset(
-            ctx.files._android_sdk + [jar, ctx.file._desugared_lib_config],
+            ctx.files._android_sdk + ctx.files._mi_host_javabase + [jar, ctx.file._desugared_lib_config, ctx.executable._desugar_dex_sharding],
             transitive = [deps] if deps else [],
         ),
         outputs = out_dex_shards,
