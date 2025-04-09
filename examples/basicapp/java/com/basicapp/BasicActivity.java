@@ -21,6 +21,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.Map;
+import java.util.HashMap;
+
 /**
  * The main activity of the Basic Sample App.
  */
@@ -35,16 +38,16 @@ public class BasicActivity extends Activity {
       findViewById(R.id.button_id_fizz), findViewById(R.id.button_id_buzz),
     };
 
+    Map<Integer, String> m = new HashMap<>();
+
+    m.put(R.id.button_id_fizz, "fizz");
+    m.put(R.id.button_id_buzz, "buzz");
     for (var b : buttons) {
       b.setOnClickListener(
           new View.OnClickListener() {
             public void onClick(View v) {
               TextView tv = findViewById(R.id.text_hello);
-              if (v.getId() == R.id.button_id_fizz) {
-                tv.setText("fizz");
-              } else if (v.getId() == R.id.button_id_buzz) {
-                tv.setText("buzz");
-              }
+              tv.setText(v.getId());
             }
           });
     }
