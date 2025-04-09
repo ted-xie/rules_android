@@ -47,7 +47,7 @@ public class BasicActivity extends Activity {
           new View.OnClickListener() {
             public void onClick(View v) {
               TextView tv = findViewById(R.id.text_hello);
-              tv.setText(v.getId());
+              tv.setText(m.get(v.getId()));
             }
           });
     }
