@@ -25,6 +25,20 @@ import android.widget.TextView;
  * The main activity of the Basic Sample App.
  */
 public class BasicActivity extends Activity {
+  interface MyInterface<T> {
+    T add(T a, T b);
+  }
+  abstract class Adder<T> {
+    public abstract T add(T a, T b);
+  }
+  class AdderI extends Adder<Integer> {
+    @Override
+    public Integer add(Integer a, Integer b) {
+      MyInterface<Integer> iface = (x, y) -> (x + y);
+
+      return iface.add(a, b);
+    }
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -35,16 +49,14 @@ public class BasicActivity extends Activity {
       findViewById(R.id.button_id_fizz), findViewById(R.id.button_id_buzz),
     };
 
+    AdderI a = new AdderI();
+
     for (var b : buttons) {
       b.setOnClickListener(
           new View.OnClickListener() {
             public void onClick(View v) {
               TextView tv = findViewById(R.id.text_hello);
-              if (v.getId() == R.id.button_id_fizz) {
-                tv.setText("fizz");
-              } else if (v.getId() == R.id.button_id_buzz) {
-                tv.setText("buzz");
-              }
+              tv.setText(a.add(R.id.text_hello, v.getId()).toString());
             }
           });
     }
