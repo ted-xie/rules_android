@@ -153,11 +153,11 @@ def create_android_sdk_rules(
                    "build-tools/%s/lib/apksigner.jar" % build_tools_directory,
                    "build-tools/%s/lib/d8.jar" % build_tools_directory,
                    ":build_tools_libs",
-               ] + [
+               ] + native.glob([
             "platforms/android-%d/%s" % (api_level, filename)
             for api_level in api_levels
             for filename in ["android.jar", "core-for-system-modules.jar", "framework.aidl"]
-        ] + select({
+        ], allow_empty = True) + select({
             ":windows": windows_only_files,
             "//conditions:default": linux_only_files,
         }),

@@ -29,3 +29,15 @@ use_repo(android_sdk_repository_extension, "androidsdk")
 
 register_toolchains("@androidsdk//:sdk-toolchain", "@androidsdk//:all")
 
+# For rules_android integration testing only.
+# For a basic app, you won't need anything below this line. 
+bazel_dep(name = "rules_shell", version = "0.4.0", dev_dependency = True)
+bazel_dep(name = "rules_bazel_integration_test", version = "0.32.0", dev_dependency = True)
+bazel_binaries = use_extension(
+    "@rules_bazel_integration_test//:extensions.bzl",
+    "bazel_binaries",
+    dev_dependency = True,
+)
+bazel_binaries.download(version = "8.2.1")
+bazel_binaries.download(version = "7.6.1")
+use_repo(bazel_binaries, "bazel_binaries")
