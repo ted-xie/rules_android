@@ -23,62 +23,19 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import androidx.room.ColumnInfo;
-import androidx.room.Database;
-import androidx.room.Delete;
-import androidx.room.Entity;
-import androidx.room.Insert;
-import androidx.room.PrimaryKey;
-import androidx.room.Query;
-import androidx.room.Room;
-import androidx.room.RoomDatabase;
-import androidx.annotation.NonNull;
+import androidx.room.Room ;
 
 /**
  * The main activity of the Basic Sample App.
  */
 public class BasicActivity extends Activity {
-  @Entity
-  class User {
-    @PrimaryKey
-    public int uid;
-
-    @ColumnInfo(name = "first_name")
-    public String firstName;
-
-    @ColumnInfo(name = "last_name")
-    public String lastName;
-
-    public User(int _uid, String _first, String _last) {
-        this.uid = _uid;
-        this.firstName = _first;
-        this.lastName = _last;
-    }
-  }
-
-  interface UserDao {
-    @Insert
-    void insertAll(User... users);
-
-    @Delete
-    void delete(User user);
-
-    @Query("SELECT * FROM user")
-    List<User> getAll();
-  }
-
-  @Database(entities = {User.class}, version = 1)
-  abstract class AppDatabase extends RoomDatabase {
-      public abstract UserDao userDao();
-  }
-
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.basic_activity);
 
     AppDatabase db = Room.databaseBuilder(getApplicationContext(),
-        AppDatabase.class, "database-name").build();
+        AppDatabase.class, "database-name").allowMainThreadQueries().build();
     UserDao userDao = db.userDao();
 
     User testUser = new User(1234, "An", "Droid");
