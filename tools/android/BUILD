@@ -86,6 +86,7 @@ genrule(
     cmd = "unzip -q -c " +
           "$(location @rules_android_maven//:com_android_tools_desugar_jdk_libs_configuration_nio) " +
           "META-INF/desugar/d8/desugar.json > $@",
+          #"META-INF/desugar/d8/desugar.json | sed \"s/B\\$$DesugarChannels/B\\$$FileChannel/\" > $@",
     visibility = ["//visibility:public"],
 )
 
@@ -142,20 +143,39 @@ genrule(
     cmd = "cp $< $@",
 )
 
+run_singlejar(
+    name = "desugar_jdk_libs_all",
+    out = "desugar_jdk_libs_all.jar",
+    srcs = [
+        "@rules_android_maven//:com_android_tools_desugar_jdk_libs_configuration",
+        ":desugared_jdk_libs_from_maven_jar",
+    ],
+)
+
+run_singlejar(
+    name = "bootclasspath",
+    srcs = [
+        ":android_jar",
+        ":desugar_java8_extra_bootclasspath",
+    ],
+    out = "android_bootclasspath.jar",
+)
+
 genrule(
     name = "desugared_jdk_libs_jar",
     srcs = [
-        ":android_jar",
-        ":desugared_jdk_libs_from_maven.jar",
+        # ":android_jar",
+        ":bootclasspath",
+        ":desugar_jdk_libs_all",
         ":full_desugar_jdk_libs_config_json",
     ],
     outs = ["desugared_jdk_libs.jar"],
     cmd = "$(location //src/tools/java/com/google/devtools/build/android/r8:core_library_desugar) " +
           "--desugar_supported_core_libs " +
           "--desugared_lib_config=$(location :full_desugar_jdk_libs_config_json) " +
-          "--bootclasspath_entry=$(location :android_jar) " +
+          "--bootclasspath_entry=$(location :bootclasspath) " +
           "--min_sdk_version=%d " % min_sdk_version.DEPOT_FLOOR +
-          "--input=$(location :desugared_jdk_libs_from_maven.jar) --output=$@",
+          "--input=$(location :desugar_jdk_libs_all) --output=$@",
     tools = ["//src/tools/java/com/google/devtools/build/android/r8:core_library_desugar"],
 )
 
