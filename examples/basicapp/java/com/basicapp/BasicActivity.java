@@ -14,6 +14,8 @@
 
 package com.basicapp;
 
+import java.util.List;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -22,8 +24,14 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.room.ColumnInfo;
+import androidx.room.Database;
+import androidx.room.Delete;
 import androidx.room.Entity;
+import androidx.room.Insert;
 import androidx.room.PrimaryKey;
+import androidx.room.Query;
+import androidx.room.Room;
+import androidx.room.RoomDatabase;
 import androidx.annotation.NonNull;
 
 /**
@@ -31,7 +39,7 @@ import androidx.annotation.NonNull;
  */
 public class BasicActivity extends Activity {
   @Entity
-  class MyThing {
+  class User {
     @PrimaryKey
     public int uid;
 
@@ -40,12 +48,42 @@ public class BasicActivity extends Activity {
 
     @ColumnInfo(name = "last_name")
     public String lastName;
+
+    public User(int _uid, String _first, String _last) {
+        this.uid = _uid;
+        this.firstName = _first;
+        this.lastName = _last;
+    }
+  }
+
+  interface UserDao {
+    @Insert
+    void insertAll(User... users);
+
+    @Delete
+    void delete(User user);
+
+    @Query("SELECT * FROM user")
+    List<User> getAll();
+  }
+
+  @Database(entities = {User.class}, version = 1)
+  abstract class AppDatabase extends RoomDatabase {
+      public abstract UserDao userDao();
   }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.basic_activity);
+
+    AppDatabase db = Room.databaseBuilder(getApplicationContext(),
+        AppDatabase.class, "database-name").build();
+    UserDao userDao = db.userDao();
+
+    User testUser = new User(1234, "An", "Droid");
+    userDao.insertAll(testUser);
+    List<User> users = userDao.getAll();
 
     final Button buttons[] = {
       findViewById(R.id.button_id_fizz), findViewById(R.id.button_id_buzz),
@@ -59,7 +97,7 @@ public class BasicActivity extends Activity {
               if (v.getId() == R.id.button_id_fizz) {
                 tv.setText("fizz");
               } else if (v.getId() == R.id.button_id_buzz) {
-                tv.setText("buzz");
+                tv.setText("buzz" + users.get(0).firstName);
               }
             }
           });
