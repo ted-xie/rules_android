@@ -21,10 +21,26 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.PrimaryKey;
+import androidx.annotation.NonNull;
+
 /**
  * The main activity of the Basic Sample App.
  */
 public class BasicActivity extends Activity {
+  @Entity
+  class MyThing {
+    @PrimaryKey
+    public int uid;
+
+    @ColumnInfo(name = "first_name")
+    public String firstName;
+
+    @ColumnInfo(name = "last_name")
+    public String lastName;
+  }
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {

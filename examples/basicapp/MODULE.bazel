@@ -24,6 +24,26 @@ remote_android_extensions = use_extension(
     "remote_android_tools_extensions")
 use_repo(remote_android_extensions, "android_gmaven_r8", "android_tools")
 
+### Example maven
+bazel_dep(name = "rules_jvm_external", version = "6.6")
+maven = use_extension("@rules_jvm_external//:extensions.bzl", "maven")
+maven.install(
+    name = "basic_maven",
+    aar_import_bzl_label = "@rules_android//rules:rules.bzl",
+    artifacts = [
+        "androidx.room:room-common-jvm:2.7.1",
+        "androidx.room:room-compiler:2.7.1",
+        "androidx.room:room-runtime:2.7.1",
+    ],
+    repositories = [
+        "https://maven.google.com",
+        "https://repo1.maven.org/maven2",
+    ],
+    use_starlark_android_rules = True,
+)
+use_repo(maven, "basic_maven")
+###
+
 android_sdk_repository_extension = use_extension("@rules_android//rules/android_sdk_repository:rule.bzl", "android_sdk_repository_extension")
 use_repo(android_sdk_repository_extension, "androidsdk")
 
