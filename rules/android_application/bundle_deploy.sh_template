@@ -1,13 +1,20 @@
 #!/bin/bash --posix
 
+set -euxo pipefail
+
 java_executable="%java_executable%"
 bundletool="%bundletool_path%"
 aab="%aab%"
+aapt2="%aapt2_path%"
 oldest_signer_properties="%oldest_signer_properties%"
 newest_key="%newest_key%"
 lineage="%lineage%"
 min_rotation_api="%min_rotation_api%"
 tmp="$(mktemp /tmp/XXXXbundle.apks)"
+
+if [[ ! -f $aapt2 ]]; then
+  aapt2=${aapt2}_binary
+fi
 
 function cleanup {
   rm  -r "$tmp"
@@ -37,9 +44,10 @@ if [[ ! -z "$min_rotation_api" ]]; then
   args+=(--rotation-min-sdk-version="$min_rotation_api")
 fi
 
-"$java_executable" -jar "$bundletool" build-apks "${args[@]}" || exit
+"$java_executable" -jar "$bundletool" build-apks "${args[@]}" \
+  --aapt2=$aapt2
 
 "$java_executable" -jar "$bundletool" install-apks \
   --adb="$(which adb)" \
   --apks "$tmp" \
-  --modules=_ALL_ || exit
+  --modules=_ALL_

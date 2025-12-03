@@ -390,8 +390,10 @@ def _impl(ctx):
     base_apk_info = ctx.attr.base_module[ApkInfo]
     deploy_script_files = [base_apk_info.signing_keys[-1]]
     subs = {
-        "%java_executable%": java_runtime.java_executable_exec_path,
+        #"%java_executable%": java_runtime.java_executable_exec_path,
+        "%java_executable%": java_runtime.java_executable_runfiles_path,
         "%bundletool_path%": get_android_toolchain(ctx).bundletool.files_to_run.executable.short_path,
+        "%aapt2_path%": get_android_toolchain(ctx).aapt2.files_to_run.executable.short_path,
         "%aab%": ctx.outputs.unsigned_aab.short_path,
         "%newest_key%": base_apk_info.signing_keys[-1].short_path,
     }
@@ -422,6 +424,7 @@ def _impl(ctx):
             executable = ctx.outputs.deploy_script,
             runfiles = ctx.runfiles([
                 ctx.outputs.unsigned_aab,
+                get_android_toolchain(ctx).aapt2.files_to_run.executable,
                 get_android_toolchain(ctx).bundletool.files_to_run.executable,
             ] + deploy_script_files, transitive_files = java_runtime.files),
         ),
